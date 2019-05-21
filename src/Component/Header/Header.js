@@ -29,7 +29,6 @@ class Header extends Component {
     //remove duplicates
     //create variable option= [{label: "" ,children:[]}]
 
-    const listSkills = ['html', 'css', 'js'];
     return (
       <div>
         <Navbar
@@ -65,7 +64,7 @@ class Header extends Component {
                 /> */}
 
                 <FilterProgrammingLanguages
-                  filter={listSkills}
+                  filter={this.props.listSkills}
                   filterBy={this.props.filterBy}
                 />
               </div>

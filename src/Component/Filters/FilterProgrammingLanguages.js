@@ -14,6 +14,14 @@ import { FormGroup, Label, Input } from 'reactstrap';
     this.setFilter = this.setFilter.bind(this);
   }
 
+  static getDerivedStateFromProps(props, state) {
+    if(state.skills != props.filter) {
+      return {
+        skills: props.filter
+      }
+    }
+  }
+
    componentDidMount() {
    //to do:
   }

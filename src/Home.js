@@ -14,9 +14,10 @@ class Home extends Component {
       studentsInfo: [], // initial fetched student list
       search: '', // will be updated when user type according to searchChange()
       filteredBySearch: [], // will be updated by searchChange() & searchClick()
-      applyFilter: false, // to display filteredBySearch after fetching api
+      applyFilter: false, // to display filteredBySearch after fetching api,
+      listProgrammingSkills: []
     };
-
+    
     this.searchClick = this.searchClick.bind(this);
     this.searchChange = this.searchChange.bind(this);
     this.createDeckHandler = this.createDeckHandler.bind(this);
@@ -27,10 +28,16 @@ class Home extends Component {
     console.log('[Home] ComponientDidMount');
     fetch('https://api-resume.herokuapp.com/api/v1/resume')
       .then(response => response.json())
-      .then(data =>
-        this.setState({
-          studentsInfo: data,
-        }),
+      .then(data => {
+          this.setState({
+            studentsInfo: data,
+          })
+
+          //todo: update filterList
+          this.setState({
+            listProgrammingSkills: ['html', 'css', 'js'] 
+          });
+        }
       )
       .catch(() => alert('error api'));
     // test for getting unique value
@@ -136,6 +143,8 @@ class Home extends Component {
   }
 
   render() {
+    const listSkills = this.state.listProgrammingSkills;
+
     console.log('render...');
     const applyFilter = this.state.applyFilter;
     const locationOptions = {
@@ -146,6 +155,7 @@ class Home extends Component {
     return (
       <div>
         <Header
+          listSkills={listSkills}
           search={this.state.search}
           searchClick={this.searchClick}
           searchChange={this.searchChange}
@@ -155,17 +165,21 @@ class Home extends Component {
           Discover the profiles of our Fullstack Junior Developers
         </h1>
         <section>
-          {applyFilter
-            ? this.state.filteredBySearch.map(filteredStudent => (
-                <Row>
-                  <SmallCard {...filteredStudent} />
-                </Row>
-              ))
-            : this.state.studentsInfo.map(studentInfo => (
-                <Row>
-                  <SmallCard {...studentInfo} />
-                </Row>
-              ))}
+          <Container>
+            <Row>
+              {applyFilter
+                ? this.state.filteredBySearch.map(filteredStudent => (
+                    <Col>
+                      <SmallCard {...filteredStudent} />
+                    </Col>
+                  ))
+                : this.state.studentsInfo.map(studentInfo => (
+                    <Col>
+                      <SmallCard {...studentInfo} />
+                    </Col>
+                  ))}
+            </Row>
+          </Container>
         </section>
         <Footer />
       </div>
