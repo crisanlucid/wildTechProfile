@@ -14,11 +14,13 @@ class Home extends Component {
       studentsInfo: [], // initial fetched student list
       search: '', // will be updated when user type according to searchChange()
       filteredBySearch: [], // will be updated by searchChange() & searchClick()
-      typed: false // to display filteredBySearch after fetching api
+      applyFilter: false, // to display filteredBySearch after fetching api
     };
 
     this.searchClick = this.searchClick.bind(this);
     this.searchChange = this.searchChange.bind(this);
+    this.createDeckHandler = this.createDeckHandler.bind(this);
+    this.filterBy = this.filterBy.bind(this);
   }
 
   componentDidMount() {
@@ -27,14 +29,16 @@ class Home extends Component {
       .then(response => response.json())
       .then(data =>
         this.setState({
-          studentsInfo: data
-        })
+          studentsInfo: data,
+        }),
       )
       .catch(() => alert('error api'));
     // test for getting unique value
     console.log('studentsInfo : ', this.state.studentsInfo.map(elem => elem));
     const uniqueCountry = [
-      ...new Set(this.state.studentsInfo.map(item => item.basics.location.country))
+      ...new Set(
+        this.state.studentsInfo.map(item => item.basics.location.country),
+      ),
     ];
     console.log('unique country : ', uniqueCountry);
   }
@@ -52,35 +56,19 @@ class Home extends Component {
       distance: 0,
       maxPatternLength: 32,
       minMatchCharLength: 1,
-      keys: [
-        'basics.name',
-        'basics.email',
-        'basics.website',
-        'basics.summary',
-        'basics.location.country',
-        'basics.profiles.network',
-        'basics.profiles.username',
-        'basics.profiles.url',
-        'projects.title',
-        'projects.date',
-        'projects.summary',
-        'projects.technologies',
-        'favorite_programming_languages',
-        'interests.name',
-        'interests.keywords'
-      ]
+      keys: ['favorite_programming_languages'],
     };
     let fuse = new Fuse(this.state.studentsInfo, options);
     console.log(fuse.search(this.state.search));
 
     this.setState({
-      filteredBySearch: fuse.search(this.state.search) // update filtered list
+      filteredBySearch: fuse.search(this.state.search), // update filtered list
     });
 
     console.log(this.state.filteredBySearch);
   }
-  
-  searchChange(e){
+
+  searchChange(e) {
     // debugger
     // console.log(e.target)
     // return
@@ -93,33 +81,16 @@ class Home extends Component {
       distance: 0,
       maxPatternLength: 32,
       minMatchCharLength: 1,
-      keys: [
-        'basics.name',
-        'basics.email',
-        'basics.website',
-        'basics.summary',
-        'basics.location.country',
-        'basics.profiles.network',
-        'basics.profiles.username',
-        'basics.profiles.url',
-        'projects.title',
-        'projects.date',
-        'projects.summary',
-        'projects.technologies',
-        'favorite_programming_languages',
-        'interests.name',
-        'interests.keywords'
-      ]
+      keys: ['projects.technologies', 'favorite_programming_languages'],
     };
     let fuse = new Fuse(this.state.studentsInfo, options);
 
     this.setState({
       search: e.target.value, // update search value while user typing
-      typed: e.target.value === '' ? false : true, // if input is empty show initial student list otherwise sho filtered list
-      filteredBySearch: fuse.search(this.state.search) // update filtered list
+      applyFilter: e.target.value === '' ? false : true, // if input is empty show initial student list otherwise sho filtered list
+      filteredBySearch: fuse.search(this.state.search), // update filtered list
     });
     console.log(e.target.value);
-
 
     // let options1  ={
     //   keys: ['projects.technologies']
@@ -129,23 +100,62 @@ class Home extends Component {
     // console.log("tech",fuse1.search('material ui'))
   }
 
+  filterBy(filterName = 'programmingSkills', value = 'any') {
+    switch (filterName) {
+      case 'programmingSkills':
+        //to do:
+        console.log('filter:programmingSkills', value);
+        this.createDeckHandler(value);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  createDeckHandler(searchValue) {
+    console.log('filter:createDeckHandler', searchValue);
+    let options = {
+      tokenize: true,
+      matchAllTokens: true,
+      findAllMatches: true,
+      threshold: 0,
+      location: 0,
+      distance: 0,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: ['favorite_programming_languages', 'projects.technologies'],
+    };
+    let fuse = new Fuse(this.state.studentsInfo, options);
+    console.log(fuse.search(searchValue));
+
+    this.setState({
+      filteredBySearch: fuse.search(searchValue),
+      applyFilter: true
+    });
+  }
+
   render() {
-    const typed = this.state.typed;
+    console.log('render...');
+    const applyFilter = this.state.applyFilter;
     const locationOptions = {
       keys: ['basics.location.country'],
     };
-    const locationFuse = new Fuse(this.state.studentsInfo, locationOptions)
-    console.log('locationFuse', locationFuse)
+    const locationFuse = new Fuse(this.state.studentsInfo, locationOptions);
+    console.log('locationFuse', locationFuse);
     return (
       <div>
         <Header
           search={this.state.search}
           searchClick={this.searchClick}
           searchChange={this.searchChange}
+          filterBy={this.filterBy}
         />
-        <h1 className="home">Discover the profiles of our Fullstack Junior Developers</h1>
+        <h1 className='home'>
+          Discover the profiles of our Fullstack Junior Developers
+        </h1>
         <section>
-          {typed
+          {applyFilter
             ? this.state.filteredBySearch.map(filteredStudent => (
                 <Row>
                   <SmallCard {...filteredStudent} />

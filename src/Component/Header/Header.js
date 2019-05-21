@@ -5,7 +5,7 @@ import { Collapse, Navbar, NavbarToggler, Nav, NavItem } from 'reactstrap';
 import DropdownTreeSelect from 'react-dropdown-tree-select'
 import 'react-dropdown-tree-select/dist/styles.css'
 import techOptions from './data.json';
-
+import FilterProgrammingLanguages from '../Filters/FilterProgrammingLanguages';
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -29,19 +29,25 @@ class Header extends Component {
     //remove duplicates
     //create variable option= [{label: "" ,children:[]}]
 
+    const listSkills = ['html', 'css', 'js'];
     return (
       <div>
-        <Navbar color="light" light expand="md" fixed="top" className="wcs-header">
+        <Navbar
+          color='light'
+          light
+          expand='md'
+          fixed='top'
+          className='wcs-header'>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar className="wcs-header-items">
-              <div className="wcs-header-searchfilter">
+            <Nav className='ml-auto' navbar className='wcs-header-items'>
+              <div className='wcs-header-searchfilter'>
                 <img
-                  src="https://i.imgur.com/emFe3O8.jpg"
-                  alt="WildCodeSchool logo"
-                  className="wcs-header-img"
+                  src='https://i.imgur.com/emFe3O8.jpg'
+                  alt='WildCodeSchool logo'
+                  className='wcs-header-img'
                 />
-                <NavItem className="m-2">
+                <NavItem className='m-2'>
                   <SearchBar
                     search={this.props.search}
                     searchClick={this.props.searchClick}
@@ -49,11 +55,19 @@ class Header extends Component {
                   />
                 </NavItem>
               </div>
-              <div className="wcs-header-searchfilter">
+              <div className='wcs-header-searchfilter'>
                 {/* DropdownTreeSelect for filter function */}
                 {/* data will be replaced with json from API */}
                 {/* onChange() will be added */}
-                <DropdownTreeSelect data={techOptions} placeholderText="Tech experience"/>
+                {/* <DropdownTreeSelect
+                  data={techOptions}
+                  placeholderText='Tech experience'
+                /> */}
+
+                <FilterProgrammingLanguages
+                  filter={listSkills}
+                  filterBy={this.props.filterBy}
+                />
               </div>
             </Nav>
           </Collapse>
